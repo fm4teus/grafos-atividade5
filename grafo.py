@@ -40,8 +40,7 @@ class Grafo:
 
     def imprime(self):
         print("\n   ---ARESTAS---   ")
-        for aresta in self.arestas:
-            aresta.imprime()
+        self.imprime_arestas()
         print("\n    ---VÉRTICES---    ")
         for vertice in self.vertices:
             self.sucessores(vertice)
@@ -112,7 +111,10 @@ class Grafo:
         for i in range(0, self.num_vertices):
             linha = f'{i+1} |'
             for j in range(0, self.num_vertices):
-                linha += f'{str(self.dist[i][j])}  '
+                if int(self.dist[i][j])<10**9:
+                    linha += f'{str(self.dist[i][j])}  '
+                else:
+                    linha += "- "
             print(linha)
 
     def excentricidade(self):
@@ -201,3 +203,37 @@ class Grafo:
         print(f'centro interior: {self.centro_interior}')
         print(f'centroide interior: {self.centroide_interior}')
         print(f'periferia interior: {self.periferia_interior}')
+
+    def get_source_target(self):
+        for aresta1 in self.arestas:
+            is_source = True
+            is_target = True
+            for aresta2 in self.arestas:
+                if aresta1.de == aresta2.para:
+                    is_source = False
+                if aresta1.para == aresta2.de:
+                    is_target = False
+            if is_source:
+                source = aresta1.de
+            if is_target:
+                target = aresta1.para
+        return source, target
+
+    def imprime_arestas(self):
+        for index, aresta in enumerate(self.arestas):
+            if int(aresta.peso) < 10**9:
+                print(f'{index} - Origem: {aresta.de} Fim: {aresta.para} Peso: {aresta.peso}') 
+                    
+    def corta_aresta(self, aresta):
+        if aresta in range(0,len(self.arestas)):
+            self.arestas[aresta].peso = 10**9
+        else:
+            print("índice inválido para aresta!")
+
+    def dist_source_target(self):
+        source, target = self.get_source_target()
+        source, target = int(source)-1, int(target)-1
+        dist = self.floyd_warshall()
+        return dist[source][target]
+
+
